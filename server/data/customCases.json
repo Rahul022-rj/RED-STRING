@@ -1,0 +1,264 @@
+[
+  {
+    "id": "case-90",
+    "number": "90",
+    "title": "Custom Case: Ship",
+    "location": "The SS Meridian, mid-Atlantic",
+    "difficulty": "Medium",
+    "description": "A A tense, slow-burn atmosphere with a shocking final reveal. mystery involving a locked captain's log at The SS Meridian, mid-Atlantic. Four people remain under suspicion and the truth is not what it first appears.",
+    "suspects": [
+      {
+        "id": "s1",
+        "name": "Julian Marsh",
+        "role": "Captain",
+        "avatar": "JM",
+        "motive": "Owes a dangerous gambling debt that must be paid this week.",
+        "alibi": "Says they were on the balcony taking a phone call.",
+        "secret": "A lock-picking kit was found in their coat pocket.",
+        "suspicion": 1
+      },
+      {
+        "id": "s2",
+        "name": "James Oduya",
+        "role": "First Mate",
+        "avatar": "JO",
+        "motive": "Was about to be exposed for a past professional error.",
+        "alibi": "Says they were in the library reading alone.",
+        "secret": "A note in their room reads: 'If they take it, I take it back.'",
+        "suspicion": 2
+      },
+      {
+        "id": "s3",
+        "name": "Saoirse Quinn",
+        "role": "Ship's Doctor",
+        "avatar": "SQ",
+        "motive": "Owes a dangerous gambling debt that must be paid this week.",
+        "alibi": "Insists they were at their post the whole time.",
+        "secret": "Their access log shows a 40-minute gap.",
+        "suspicion": 3
+      },
+      {
+        "id": "s4",
+        "name": "Dmitri Volkov",
+        "role": "Wealthy Passenger",
+        "avatar": "DV",
+        "motive": "Holds a secret grudge from a deal gone wrong years ago.",
+        "alibi": "Says they were in their quarters on a video call.",
+        "secret": "A note in their room reads: 'If they take it, I take it back.'",
+        "suspicion": 4
+      }
+    ],
+    "evidence": [
+      {
+        "id": "e1",
+        "title": "Wiped Footage",
+        "description": "Two hours of security footage were manually deleted. A tense, slow-burn atmosphere with a shocking final reveal.",
+        "location": "The SS Meridian",
+        "relatedSuspect": "s1",
+        "category": "Digital",
+        "importance": "High"
+      },
+      {
+        "id": "e2",
+        "title": "Video Call Record",
+        "description": "A call record places a suspect well after the key time. A tense, slow-burn atmosphere with a shocking final reveal.",
+        "location": "The SS Meridian",
+        "relatedSuspect": "s2",
+        "category": "Timeline",
+        "importance": "Low"
+      },
+      {
+        "id": "e3",
+        "title": "Heated Argument",
+        "description": "A witness overheard a shouting match moments before the incident. A tense, slow-burn atmosphere with a shocking final reveal.",
+        "location": "The SS Meridian",
+        "relatedSuspect": "s3",
+        "category": "Witness",
+        "importance": "Medium"
+      },
+      {
+        "id": "e4",
+        "title": "Handwritten Note",
+        "description": "A cryptic handwritten line found in a suspect's quarters. A tense, slow-burn atmosphere with a shocking final reveal.",
+        "location": "The SS Meridian",
+        "relatedSuspect": "s4",
+        "category": "Physical",
+        "importance": "Medium"
+      },
+      {
+        "id": "e5",
+        "title": "Solvent-Traced Coat",
+        "description": "A lab coat carries traces of a solvent used to dissolve sensors. A tense, slow-burn atmosphere with a shocking final reveal.",
+        "location": "The SS Meridian",
+        "relatedSuspect": "s1",
+        "category": "Physical",
+        "importance": "Medium"
+      },
+      {
+        "id": "e6",
+        "title": "Manually Tripped Fuse",
+        "description": "The fuse box was switched off by hand, not by a storm. A tense, slow-burn atmosphere with a shocking final reveal.",
+        "location": "The SS Meridian",
+        "relatedSuspect": "s2",
+        "category": "Physical",
+        "importance": "High"
+      },
+      {
+        "id": "e7",
+        "title": "Financial Letter",
+        "description": "A letter revealing financial pressure and a reason to act. A tense, slow-burn atmosphere with a shocking final reveal.",
+        "location": "The SS Meridian",
+        "relatedSuspect": "s3",
+        "category": "Digital",
+        "importance": "Medium"
+      }
+    ],
+    "hints": [
+      "Pay attention to who had both physical access and the skill to bypass the security.",
+      "Two pieces of evidence point at the same suspect. Look for the access gap and the timeline mismatch.",
+      "The culprit is the Captain. They had Wiped Footage and could not fully account for their time."
+    ],
+    "custom": true,
+    "_solution": {
+      "culprit": "s1",
+      "motive": "Owes a dangerous gambling debt that must be paid this week.",
+      "method": "The Captain used their role and access to carry out the crime during a window they could not account for.",
+      "timeline": "Before the incident - a heated exchange was overheard. During the incident - access was used and the sealed area was compromised. After - a suspicious cover-up action was taken.",
+      "keyEvidence": [
+        "e1",
+        "e5"
+      ],
+      "innocent": {
+        "s2": "James Oduya had motive or proximity, but the evidence trail does not connect them to the sealed area.",
+        "s3": "Saoirse Quinn had motive or proximity, but the evidence trail does not connect them to the sealed area.",
+        "s4": "Dmitri Volkov had motive or proximity, but the evidence trail does not connect them to the sealed area."
+      }
+    }
+  },
+  {
+    "id": "case-54",
+    "number": "54",
+    "title": "Custom Case: Facility",
+    "location": "Aurora Research Facility, Iceland",
+    "difficulty": "Easy",
+    "description": "A tense, slow-burn atmosphere with a shocking final reveal. mystery involving a classified research prototype at Aurora Research Facility, Iceland. Four people remain under suspicion and the truth is not what it first appears.",
+    "suspects": [
+      {
+        "id": "s1",
+        "name": "James Oduya",
+        "role": "Lead Engineer",
+        "avatar": "JO",
+        "motive": "Was refused the artifact for years and is obsessed with owning it.",
+        "alibi": "Insists they were at their post the whole time.",
+        "secret": "Their access log shows a 40-minute gap.",
+        "suspicion": 1
+      },
+      {
+        "id": "s2",
+        "name": "Oliver Brandt",
+        "role": "Research Partner",
+        "avatar": "OB",
+        "motive": "Was refused the artifact for years and is obsessed with owning it.",
+        "alibi": "Insists they were at their post the whole time.",
+        "secret": "A note in their room reads: 'If they take it, I take it back.'",
+        "suspicion": 2
+      },
+      {
+        "id": "s3",
+        "name": "Amara Yusuf",
+        "role": "Facility Guard",
+        "avatar": "AY",
+        "motive": "Owes a dangerous gambling debt that must be paid this week.",
+        "alibi": "Claims they were in the basement checking the fuse box.",
+        "secret": "Their coat carries traces of a solvent that dissolves sensors.",
+        "suspicion": 3
+      },
+      {
+        "id": "s4",
+        "name": "Marcus Hale",
+        "role": "Lab Technician",
+        "avatar": "MH",
+        "motive": "Was about to be exposed for a past professional error.",
+        "alibi": "Says they were in their quarters on a video call.",
+        "secret": "A note in their room reads: 'If they take it, I take it back.'",
+        "suspicion": 4
+      }
+    ],
+    "evidence": [
+      {
+        "id": "e1",
+        "title": "Heated Argument",
+        "description": "A witness overheard a shouting match moments before the incident. A tense, slow-burn atmosphere with a shocking final reveal.",
+        "location": "Aurora Research Facility",
+        "relatedSuspect": "s1",
+        "category": "Witness",
+        "importance": "Medium"
+      },
+      {
+        "id": "e2",
+        "title": "Itinerary Mismatch",
+        "description": "A schedule that is inconsistent with what actually happened. A tense, slow-burn atmosphere with a shocking final reveal.",
+        "location": "Aurora Research Facility",
+        "relatedSuspect": "s2",
+        "category": "Timeline",
+        "importance": "Low"
+      },
+      {
+        "id": "e3",
+        "title": "Reconstructed Door Log",
+        "description": "Recovered logs show a door opened with a wiped identity. A tense, slow-burn atmosphere with a shocking final reveal.",
+        "location": "Aurora Research Facility",
+        "relatedSuspect": "s3",
+        "category": "Digital",
+        "importance": "High"
+      },
+      {
+        "id": "e4",
+        "title": "Badge Access Log",
+        "description": "An access badge was used at a door its owner claims never to have visited. A tense, slow-burn atmosphere with a shocking final reveal.",
+        "location": "Aurora Research Facility",
+        "relatedSuspect": "s4",
+        "category": "Digital",
+        "importance": "High"
+      },
+      {
+        "id": "e5",
+        "title": "Financial Letter",
+        "description": "A letter revealing financial pressure and a reason to act. A tense, slow-burn atmosphere with a shocking final reveal.",
+        "location": "Aurora Research Facility",
+        "relatedSuspect": "s1",
+        "category": "Digital",
+        "importance": "Medium"
+      },
+      {
+        "id": "e6",
+        "title": "Video Call Record",
+        "description": "A call record places a suspect well after the key time. A tense, slow-burn atmosphere with a shocking final reveal.",
+        "location": "Aurora Research Facility",
+        "relatedSuspect": "s2",
+        "category": "Timeline",
+        "importance": "Low"
+      }
+    ],
+    "hints": [
+      "Pay attention to who had both physical access and the skill to bypass the security.",
+      "Two pieces of evidence point at the same suspect. Look for the access gap and the timeline mismatch.",
+      "The culprit is the Facility Guard. They had Reconstructed Door Log and could not fully account for their time."
+    ],
+    "custom": true,
+    "_solution": {
+      "culprit": "s3",
+      "motive": "Owes a dangerous gambling debt that must be paid this week.",
+      "method": "The Facility Guard used their role and access to carry out the crime during a window they could not account for.",
+      "timeline": "Before the incident - a heated exchange was overheard. During the incident - access was used and the sealed area was compromised. After - a suspicious cover-up action was taken.",
+      "keyEvidence": [
+        "e3"
+      ],
+      "innocent": {
+        "s1": "James Oduya had motive or proximity, but the evidence trail does not connect them to the sealed area.",
+        "s2": "Oliver Brandt had motive or proximity, but the evidence trail does not connect them to the sealed area.",
+        "s4": "Marcus Hale had motive or proximity, but the evidence trail does not connect them to the sealed area."
+      }
+    }
+  }
+]
