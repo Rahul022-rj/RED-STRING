@@ -10,6 +10,38 @@ Create a free detective account and play from any device. Your progress is saved
 
 > Hosted on Render's free plan: if nobody has played for a while, the first load can take 30–50 seconds while the server wakes up.
 
+<p align="center">
+  <img src="docs/screenshots/gameplay.gif" alt="RED STRING gameplay: briefing, crime scene search, interrogation, corkboard, verdict and leaderboard" width="800">
+</p>
+
+---
+
+## 📸 Screenshots
+
+<table>
+  <tr>
+    <td width="50%"><img src="docs/screenshots/briefing.jpg" alt="Case briefing"><br><b>Case briefing</b>: the file unfolds, the clock starts.</td>
+    <td width="50%"><img src="docs/screenshots/crime-scene.jpg" alt="Crime scene"><br><b>Crime scene</b>: spend hours searching locations for evidence.</td>
+  </tr>
+  <tr>
+    <td><img src="docs/screenshots/interrogation.jpg" alt="Interrogation room"><br><b>Interrogation</b>: present the right evidence to break a suspect.</td>
+    <td><img src="docs/screenshots/board.jpg" alt="Investigation corkboard"><br><b>Corkboard</b>: tie suspects and clues together with red string.</td>
+  </tr>
+  <tr>
+    <td><img src="docs/screenshots/verdict.jpg" alt="Verdict screen"><br><b>Verdict</b>: stamped result, stars and a server-scored breakdown.</td>
+    <td><img src="docs/screenshots/leaderboard.jpg" alt="Global leaderboard"><br><b>Leaderboard</b>: every detective ranked by XP (demo data).</td>
+  </tr>
+  <tr>
+    <td><img src="docs/screenshots/profile.jpg" alt="Detective profile"><br><b>Profile</b>: level, service record and achievements.</td>
+    <td><img src="docs/screenshots/home.jpg" alt="Home screen"><br><b>Home</b>: create an account and start investigating.</td>
+  </tr>
+</table>
+
+<p align="center">
+  <img src="docs/screenshots/mobile.jpg" alt="RED STRING on a phone" width="260"><br>
+  <b>Works on phones too.</b>
+</p>
+
 **RED STRING** is a complete, full-stack, interactive detective game. Players step into the shoes of an investigator to solve mysterious incidents by examining suspects, discovering hidden evidence, and connecting clues on an interactive virtual corkboard using red strings. Once they have a theory, they make an accusation and get scored based on their detective work.
 
 The application features a Node.js/Express backend for game logic, API routing, and scoring, alongside a dynamic React/Vite frontend featuring a premium cinematic dark theme. It also includes an AI-powered Case Generator to create infinite new mysteries!
