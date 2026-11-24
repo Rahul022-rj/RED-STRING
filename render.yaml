@@ -1,0 +1,17 @@
+# One-click deploy on Render (https://render.com): New > Blueprint > pick this repo.
+# The Express server hosts both the API and the built React game on one URL.
+services:
+  - type: web
+    name: red-string
+    runtime: node
+    plan: free
+    buildCommand: npm run build
+    startCommand: npm start
+    healthCheckPath: /api/health
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: JWT_SECRET
+        generateValue: true
+      - key: MONGODB_URI
+        sync: false   # paste your MongoDB Atlas connection string in the Render dashboard

@@ -1,14 +1,14 @@
 // Local (offline) case generator + optional real-AI path.
 
 const THEMES = {
-  museum: { location: "Ashford Museum, London", thing: "a priceless artifact", roles: ["Museum Curator", "Private Collector", "Security Guard", "Event Photographer"] },
-  mansion: { location: "Blackwood Manor, Yorkshire", thing: "a sealed family heirloom", roles: ["Estate Owner", "Family Physician", "Estate Manager", "Business Partner"] },
-  facility: { location: "Aurora Research Facility, Iceland", thing: "a classified research prototype", roles: ["Lead Engineer", "Research Partner", "Facility Guard", "Lab Technician"] },
-  ship: { location: "The SS Meridian, mid-Atlantic", thing: "a locked captain's log", roles: ["Captain", "First Mate", "Ship's Doctor", "Wealthy Passenger"] },
-  theatre: { location: "The Orpheum Theatre, Paris", thing: "the lead actor's missing script", roles: ["Director", "Lead Actor", "Stage Manager", "Costume Designer"] },
-  school: { location: "St. Aldric's Academy", thing: "a stolen examination paper", roles: ["Headmaster", "Senior Teacher", "Prefect", "Groundskeeper"] },
-  gallery: { location: "Vermeer Gallery, Amsterdam", thing: "a forged signature", roles: ["Gallery Owner", "Art Restorer", "Night Watchman", "Visiting Critic"] },
-  hotel: { location: "The Grand Continental, Vienna", thing: "a guest's missing inheritance", roles: ["Hotel Manager", "Concierge", "Housekeeping Lead", "Long-term Guest"] }
+  museum: { location: "Ashford Museum, London", thing: "a priceless artifact", roles: ["Museum Curator", "Private Collector", "Security Guard", "Event Photographer"], scenes: ["Main Hall", "Vault Corridor", "Security Office", "Curator's Office", "Cloakroom"] },
+  mansion: { location: "Blackwood Manor, Yorkshire", thing: "a sealed family heirloom", roles: ["Estate Owner", "Family Physician", "Estate Manager", "Business Partner"], scenes: ["Library", "East Wing", "Basement", "Dining Room", "Study"] },
+  facility: { location: "Aurora Research Facility, Iceland", thing: "a classified research prototype", roles: ["Lead Engineer", "Research Partner", "Facility Guard", "Lab Technician"], scenes: ["Server Room", "Main Lab", "Security Office", "Crew Quarters", "Storage Bay"] },
+  ship: { location: "The SS Meridian, mid-Atlantic", thing: "a locked captain's log", roles: ["Captain", "First Mate", "Ship's Doctor", "Wealthy Passenger"], scenes: ["Bridge", "Captain's Cabin", "Engine Room", "Dining Saloon", "Promenade Deck"] },
+  theatre: { location: "The Orpheum Theatre, Paris", thing: "the lead actor's missing script", roles: ["Director", "Lead Actor", "Stage Manager", "Costume Designer"], scenes: ["Main Stage", "Dressing Rooms", "Prop Store", "Box Office", "Orchestra Pit"] },
+  school: { location: "St. Aldric's Academy", thing: "a stolen examination paper", roles: ["Headmaster", "Senior Teacher", "Prefect", "Groundskeeper"], scenes: ["Headmaster's Study", "Exam Hall", "Dormitory", "Library", "Groundskeeper's Shed"] },
+  gallery: { location: "Vermeer Gallery, Amsterdam", thing: "a forged signature", roles: ["Gallery Owner", "Art Restorer", "Night Watchman", "Visiting Critic"], scenes: ["Exhibition Hall", "Restoration Studio", "Security Office", "Loading Dock", "Owner's Office"] },
+  hotel: { location: "The Grand Continental, Vienna", thing: "a guest's missing inheritance", roles: ["Hotel Manager", "Concierge", "Housekeeping Lead", "Long-term Guest"], scenes: ["Grand Lobby", "Penthouse Suite", "Concierge Desk", "Housekeeping Room", "Hotel Bar"] }
 };
 
 const NAMES = [
@@ -85,78 +85,94 @@ function pickUnique(arr, n) {
   return out;
 }
 
+const TITLE_WORDS = ["Silent", "Crimson", "Vanishing", "Last", "Hollow", "Midnight", "Broken", "Gilded"];
+const TITLE_NOUNS = ["Affair", "Alibi", "Witness", "Ledger", "Hour", "Masquerade", "Confession", "Key"];
+
+const pick = (arr) => arr[Math.floor(Math.random() * arr.length)];
+
+function shuffle(arr) {
+  const a = [...arr];
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
 function buildLocalCase(opts) {
   const { themeKey, difficulty, tone } = opts;
   const theme = THEMES[themeKey] || THEMES.museum;
-  const num = String(Math.floor(Math.random() * 90) + 10);
+  const num = String(Math.floor(Math.random() * 900) + 100);
 
   const names = pickUnique(NAMES, 4).map(([f, l]) => ({ first: f, last: l }));
+  const motives = shuffle(MOTIVES);
+  const alibis = shuffle(ALIBIS);
+  const secrets = shuffle(SECRETS);
 
-  const suspects = names.map((n, i) => {
-    const initials = (n.first[0] + n.last[0]).toUpperCase();
-    return {
-      id: "s" + (i + 1),
-      name: n.first + " " + n.last,
-      role: theme.roles[i],
-      avatar: initials,
-      motive: MOTIVES[(i + Math.floor(Math.random() * 3)) % MOTIVES.length],
-      alibi: ALIBIS[(i + Math.floor(Math.random() * 3)) % ALIBIS.length],
-      secret: SECRETS[(i + Math.floor(Math.random() * 3)) % SECRETS.length],
-      suspicion: difficulty === "Hard" ? 2 + (i % 3) : 1 + (i % 4)
-    };
-  });
-
-  const chosen = pickUnique(EVIDENCE_POOL, difficulty === "Hard" ? 8 : difficulty === "Medium" ? 7 : 6);
-  const evidence = chosen.map((e, i) => ({
-    id: "e" + (i + 1),
-    title: e.base,
-    description: e.desc + " " + tone,
-    location: theme.location.split(",")[0],
-    relatedSuspect: suspects[i % 4].id,
-    category: e.cat,
-    importance: e.imp
+  const suspects = names.map((n, i) => ({
+    id: "s" + (i + 1),
+    name: n.first + " " + n.last,
+    role: theme.roles[i],
+    avatar: (n.first[0] + n.last[0]).toUpperCase(),
+    motive: motives[i],
+    alibi: alibis[i],
+    secret: secrets[i],
+    suspicion: 1 + Math.floor(Math.random() * 4)
   }));
 
-  const highEvidence = evidence.filter((e) => e.importance === "High");
-  const culpritId = (highEvidence[0] && highEvidence[0].relatedSuspect) || suspects[0].id;
-  const culprit = suspects.find((s) => s.id === culpritId);
+  const culprit = pick(suspects);
+  const count = difficulty === "Hard" ? 8 : difficulty === "Medium" ? 7 : 6;
+  const high = shuffle(EVIDENCE_POOL.filter((e) => e.imp === "High"));
+  const keyPicks = high.slice(0, 2);
+  const rest = shuffle(EVIDENCE_POOL.filter((e) => !keyPicks.includes(e)));
+  const chosen = [...keyPicks, ...rest].slice(0, count);
 
-  const culpritEvidence = evidence.filter((e) => e.relatedSuspect === culpritId);
-  const keyEvidence = culpritEvidence.slice(0, 3).map((e) => e.id);
+  // First 3 items implicate the culprit; the rest are spread across the innocent.
+  const innocents = suspects.filter((s) => s.id !== culprit.id);
+  const scenes = shuffle(theme.scenes || [theme.location.split(",")[0]]);
+  const evidence = shuffle(
+    chosen.map((e, i) => ({
+      title: e.base,
+      description: e.desc,
+      location: scenes[i % scenes.length],
+      relatedSuspect: i < 3 ? culprit.id : innocents[(i - 3) % innocents.length].id,
+      category: e.cat,
+      importance: e.imp
+    }))
+  ).map((e, i) => ({ id: "e" + (i + 1), ...e }));
 
-  const hints = [
-    HINTS_TEMPLATE[0],
-    HINTS_TEMPLATE[1],
-    "The culprit is the " + culprit.role + ". They had " +
-      ((culpritEvidence[0] && culpritEvidence[0].title) || "access evidence") +
-      " and could not fully account for their time."
-  ];
+  const keyEvidence = evidence.filter((e) => e.relatedSuspect === culprit.id).map((e) => e.id);
+  const firstKey = evidence.find((e) => e.id === keyEvidence[0]);
 
-  const innocent = suspects.reduce((acc, s) => {
-    if (s.id !== culpritId) {
-      acc[s.id] = s.name + " had motive or proximity, but the evidence trail does not connect them to the sealed area.";
-    }
-    return acc;
-  }, {});
+  const innocent = {};
+  innocents.forEach((s) => {
+    innocent[s.id] = s.name + " had motive or proximity, but the evidence trail does not connect them to the crime itself.";
+  });
+
+  const mood = String(tone || "").trim().replace(/[.!]+$/, "");
 
   return {
     id: "case-" + num,
     number: num,
-    title: "Custom Case: " + themeKey.charAt(0).toUpperCase() + themeKey.slice(1),
+    title: "The " + pick(TITLE_WORDS) + " " + pick(TITLE_NOUNS),
     location: theme.location,
     difficulty: difficulty,
     description:
-      tone + " mystery involving " + theme.thing + " at " + theme.location +
-      ". Four people remain under suspicion and the truth is not what it first appears.",
+      "Someone has tampered with " + theme.thing + " at " + theme.location + ". " +
+      "Four people were present, each with something to hide." + (mood ? " " + mood + "." : ""),
     suspects: suspects,
     evidence: evidence,
-    hints: hints,
+    hints: [
+      HINTS_TEMPLATE[0],
+      HINTS_TEMPLATE[1],
+      "The culprit is the " + culprit.role + ". Look closely at the " + (firstKey ? firstKey.title : "access evidence") + "."
+    ],
     custom: true,
     _solution: {
-      culprit: culpritId,
+      culprit: culprit.id,
       motive: culprit.motive,
       method: "The " + culprit.role + " used their role and access to carry out the crime during a window they could not account for.",
-      timeline: "Before the incident - a heated exchange was overheard. During the incident - access was used and the sealed area was compromised. After - a suspicious cover-up action was taken.",
+      timeline: "Before - a heated exchange was overheard. During - access was used and the scene was compromised. After - a cover-up was attempted.",
       keyEvidence: keyEvidence,
       innocent: innocent
     }

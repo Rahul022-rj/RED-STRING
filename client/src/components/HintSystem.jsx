@@ -1,35 +1,56 @@
 ﻿import { useState } from "react";
 import { requestHint } from "../services/api.js";
+import { HINT_PENALTY } from "../game/rules.js";
+import { sfx } from "../game/sfx.js";
 
-export default function HintSystem({ caseId, onHintUsed }) {
-  const [hints, setHints] = useState([]);
-  const [loading, setLoading] = useState(false);
+export default function HintSystem({ caseId, hints, onHint, onClose, locked }) {
+  const [loading, setLoading] = useState(0);
+  const [err, setErr] = useState("");
 
   async function getHint(level) {
-    if (hints.find((h) => h.level === level)) return;
-    setLoading(true);
-    const data = await requestHint(caseId, level);
-    setHints([...hints, { level, text: data.hint }]);
-    onHintUsed && onHintUsed(level);
-    setLoading(false);
+    if (hints[level] || loading) return;
+    setLoading(level);
+    setErr("");
+    try {
+      const data = await requestHint(caseId, level);
+      sfx.discover();
+      onHint(level, data.hint, data.profile);
+    } catch {
+      setErr("The informant isn't answering. Is the server running?");
+    }
+    setLoading(0);
   }
 
   return (
-    <div className="hint-panel">
-      <h3>Detective Hints</h3>
-      <div className="hint-buttons">
-        {[1, 2, 3].map((lvl) => (
-          <button key={lvl} className="btn btn-small" disabled={loading || hints.find((h) => h.level === lvl)} onClick={() => getHint(lvl)}>
-            Hint {lvl} {hints.find((h) => h.level === lvl) ? "unlocked" : "( -50 pts )"}
-          </button>
-        ))}
-      </div>
-      <div className="hint-list">
-        {hints.map((h) => (
-          <div key={h.level} className="hint-item">
-            <strong>Hint {h.level}:</strong> {h.text}
-          </div>
-        ))}
+    <div className="modal-overlay" onClick={onClose}>
+      <div className="modal wide pop-in" onClick={(e) => e.stopPropagation()}>
+        <div className="case-number">INFORMANT</div>
+        <h3>Call in a favour</h3>
+        <p className="modal-body">Each tip costs <strong>{HINT_PENALTY} points</strong> from your final score. Tips unlock in order.</p>
+        <div className="hint-list">
+          {[1, 2, 3].map((lvl) => {
+            const unlocked = !!hints[lvl];
+            const available = lvl === 1 || hints[lvl - 1];
+            return (
+              <div key={lvl} className={"hint-item" + (unlocked ? " open" : "")}>
+                <strong>Tip {lvl}</strong>{" "}
+                {unlocked ? (
+                  hints[lvl]
+                ) : (
+                  <button
+                    className="btn btn-small btn-ghost"
+                    disabled={!available || locked || loading}
+                    onClick={() => getHint(lvl)}
+                  >
+                    {loading === lvl ? "Calling..." : available ? `Unlock (−${HINT_PENALTY} pts)` : "Locked"}
+                  </button>
+                )}
+              </div>
+            );
+          })}
+        </div>
+        {err && <p className="error-text">{err}</p>}
+        <button className="btn btn-ghost" onClick={onClose}>Close</button>
       </div>
     </div>
   );

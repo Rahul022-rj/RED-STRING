@@ -1,59 +1,77 @@
+import { emit } from "../game/events.js";
+
 const base = "/api";
+const TOKEN_KEY = "redstring-token";
 
-export async function fetchCases() {
-  const r = await fetch(base + "/cases");
-  return r.json();
+export function getToken() {
+  try {
+    return localStorage.getItem(TOKEN_KEY);
+  } catch {
+    return null;
+  }
 }
 
-export async function fetchCase(id) {
-  const r = await fetch(base + "/cases/" + id);
-  return r.json();
+export function setToken(token) {
+  try {
+    if (token) localStorage.setItem(TOKEN_KEY, token);
+    else localStorage.removeItem(TOKEN_KEY);
+  } catch {
+    /* ignore */
+  }
 }
 
-export async function fetchEvidence(id) {
-  const r = await fetch(base + "/cases/" + id + "/evidence");
-  return r.json();
+async function request(method, path, body, { keepalive = false } = {}) {
+  const headers = {};
+  if (body !== undefined) headers["Content-Type"] = "application/json";
+  const token = getToken();
+  if (token) headers.Authorization = "Bearer " + token;
+
+  let r;
+  try {
+    r = await fetch(base + path, {
+      method,
+      headers,
+      body: body !== undefined ? JSON.stringify(body) : undefined,
+      keepalive
+    });
+  } catch {
+    const e = new Error("Can't reach the server. Check your connection.");
+    e.offline = true;
+    throw e;
+  }
+  const data = await r.json().catch(() => ({}));
+  if (r.status === 401 && token) {
+    setToken(null);
+    emit("logout");
+  }
+  if (!r.ok) {
+    const e = new Error(data.error || "Request failed: " + r.status);
+    e.status = r.status;
+    throw e;
+  }
+  return data;
 }
 
-export async function submitAccusation(payload) {
-  const r = await fetch(base + "/game/accuse", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(payload)
-  });
-  return r.json();
-}
+/* cases */
+export const fetchCases = () => request("GET", "/cases");
+export const fetchCase = (id) => request("GET", "/cases/" + id);
+export const fetchEvidence = (id) => request("GET", "/cases/" + id + "/evidence");
 
-export async function requestHint(caseId, level) {
-  const r = await fetch(base + "/game/hint", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ caseId, level })
-  });
-  return r.json();
-}
+/* game */
+export const submitAccusation = (payload) => request("POST", "/game/accuse", payload);
+export const requestHint = (caseId, level) => request("POST", "/game/hint", { caseId, level });
+export const generateCase = (payload) => request("POST", "/generate", payload);
+export const deleteCustomCase = (caseId) => request("DELETE", "/generate/" + caseId);
 
-export async function submitScore(payload) {
-  const r = await fetch(base + "/game/score", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(payload)
-  });
-  return r.json();
-}
+/* auth */
+export const register = (username, password, displayName) => request("POST", "/auth/register", { username, password, displayName });
+export const login = (username, password) => request("POST", "/auth/login", { username, password });
 
-export async function generateCase(payload) {
-  const r = await fetch(base + "/generate", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(payload)
-  });
-  if (!r.ok) throw new Error("Generate failed: " + r.status);
-  return r.json();
-}
-
-export async function deleteCustomCase(caseId) {
-  const r = await fetch(base + "/generate/" + caseId, { method: "DELETE" });
-  if (!r.ok) throw new Error("Delete failed: " + r.status);
-  return r.json();
-}
+/* player state */
+export const fetchState = () => request("GET", "/me/state");
+export const putProgress = (caseId, data) => request("PUT", "/me/progress/" + caseId, { data }, { keepalive: true });
+export const putBoard = (caseId, board) => request("PUT", "/me/board/" + caseId, { board }, { keepalive: true });
+export const deleteProgress = (caseId) => request("DELETE", "/me/progress/" + caseId);
+export const putProfile = (patch) => request("PUT", "/me/profile", patch);
+export const postEvent = (type) => request("POST", "/me/event", { type });
+export const fetchLeaderboard = () => request("GET", "/leaderboard");
