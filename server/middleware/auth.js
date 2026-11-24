@@ -19,7 +19,10 @@ async function loadUser(req) {
   if (!token) return null;
   try {
     const payload = jwt.verify(token, SECRET);
-    return await User.findById(payload.sub);
+    const user = await User.findById(payload.sub);
+    // A password change/reset signs out every session that started before it (1 s grace for clock rounding).
+    if (user && user.passwordChangedAt && payload.iat * 1000 < user.passwordChangedAt.getTime() - 1000) return null;
+    return user;
   } catch {
     return null;
   }

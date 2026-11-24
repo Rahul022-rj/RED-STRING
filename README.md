@@ -69,7 +69,7 @@ The application features a Node.js/Express backend for game logic, API routing, 
 - **Audio:** Procedural sound effects and an ambient rain-and-drone soundtrack, all synthesized with the Web Audio API (no audio files).
 - **Case generator:** Generate unlimited playable cases from 8 settings, each with its own set of search locations (local template engine, or OpenAI if a key is configured).
 - **5 hand-written cases:** The Missing Diamond (Easy), Midnight at Blackwood (Medium), The Missing Scientist (Hard), Curtain Call at the Orpheum (Medium) and The Dark Lighthouse (Hard), plus unlimited generated ones.
-- **Online accounts:** Register and log in (bcrypt-hashed passwords, JWT sessions), and change your password from your profile. Your cases, notes, board, XP and achievements are stored in MongoDB, so you can continue on any device.
+- **Online accounts:** Register and log in with your username or email (bcrypt-hashed passwords, JWT sessions). Change your password from your profile, or use **Forgot password / Forgot username** to get a reset link or a username reminder by email. Your cases, notes, board, XP and achievements are stored in MongoDB, so you can continue on any device.
 - **Global and per-case leaderboards:** Every player is ranked by XP, and each case has its own top-10 best scores. XP and scores are computed on the server from stored progress, so they can't be edited in the browser.
 - **Android app:** A signed APK built with Capacitor that shares the same accounts and database as the website.
 - **Shared case library:** Cases a player generates are saved to the database and playable by everyone, credited to their creator. Only the creator can delete them.
@@ -165,6 +165,7 @@ In production the Express server hosts both the API and the built game, so the w
 2. **Push** this repo to GitHub.
 3. **Render:** On [render.com](https://render.com) choose **New → Blueprint** and select the repo. `render.yaml` sets everything up (build `npm run build`, start `npm start`, auto-generated `JWT_SECRET`).
 4. When asked, paste your Atlas string as **`MONGODB_URI`**.
+   For recovery emails also set **`BREVO_API_KEY`** and **`MAIL_FROM`** (a sender address verified in [Brevo](https://www.brevo.com), free for 300 emails a day). Without them the game works, but "Forgot password" emails are not sent.
 5. Open the `https://red-string-xxxx.onrender.com` URL and share it. (The official deployment is live at **https://red-string-7n2s.onrender.com/**.)
 
 Any Node host works the same way (Railway, Fly.io, a VPS): run `npm run build`, then `npm start` with `MONGODB_URI`, `JWT_SECRET` and `NODE_ENV=production` set.
@@ -182,6 +183,9 @@ Any Node host works the same way (Railway, Fly.io, a VPS): run `npm run build`, 
 | POST | `/api/game/accuse`, `/api/game/hint` | ✔ | Server-scored accusation, informant tips |
 | POST/DELETE | `/api/generate` | ✔ | Generate / delete your custom case |
 | PUT | `/api/me/password` | ✔ | Change password (needs the current one) |
+| PUT | `/api/me/email` | ✔ | Add, change or remove the recovery email (needs the password) |
+| POST | `/api/auth/forgot-password`, `/api/auth/forgot-username` | – | Email a reset link / username reminder (5 per hour per IP) |
+| POST | `/api/auth/reset-password` | – | Set a new password with an emailed link (single use, 30 min) |
 | GET | `/api/cases`, `/api/leaderboard`, `/api/leaderboard/case/:caseId` | – | Case archive, overall and per-case rankings |
 
 ---

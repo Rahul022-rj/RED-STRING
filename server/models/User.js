@@ -19,6 +19,13 @@ const userSchema = new mongoose.Schema(
     username: { type: String, required: true, unique: true, lowercase: true, trim: true },
     displayName: { type: String, required: true, trim: true, maxlength: 24 },
     passwordHash: { type: String, required: true },
+    // Optional, used only for account recovery. Never shown to other players.
+    email: { type: String, lowercase: true, trim: true, maxlength: 254, unique: true, sparse: true },
+    // Password reset: only a SHA-256 hash of the emailed token is stored.
+    resetTokenHash: { type: String, index: true },
+    resetTokenExpires: { type: Date },
+    // Login tokens issued before this moment are rejected (signs out old sessions).
+    passwordChangedAt: { type: Date },
     xp: { type: Number, default: 0, index: true },
     stats: { type: statsSchema, default: () => ({}) },
     // achievementId -> unlock date (ISO string)
@@ -34,6 +41,7 @@ userSchema.methods.toProfile = function () {
     id: this._id.toString(),
     username: this.username,
     name: this.displayName,
+    email: this.email || null,
     xp: this.xp,
     stats: this.stats ? this.stats.toObject() : {},
     achievements: this.achievements || {},

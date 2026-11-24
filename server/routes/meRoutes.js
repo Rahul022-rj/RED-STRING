@@ -11,6 +11,7 @@ router.delete("/progress/:caseId", wrap(ctrl.resetProgress));
 router.put("/board/:caseId", wrap(ctrl.saveBoard));
 router.put("/profile", wrap(ctrl.updateProfile));
 router.put("/password", wrap(ctrl.changePassword));
+router.put("/email", wrap(ctrl.updateEmail));
 router.post("/event", wrap(ctrl.recordEvent));
 
 module.exports = router;

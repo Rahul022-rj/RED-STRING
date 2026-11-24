@@ -35,7 +35,11 @@ app.use(cors({
 app.use(express.json({ limit: "1mb" }));
 
 app.get("/api/health", (req, res) =>
-  res.json({ status: "ok", db: mongoose.connection.readyState === 1 ? "connected" : "disconnected" })
+  res.json({
+    status: "ok",
+    db: mongoose.connection.readyState === 1 ? "connected" : "disconnected",
+    mail: require("./services/mailer").isConfigured() ? "configured" : "not configured"
+  })
 );
 app.use("/api/auth", authRoutes);
 app.use("/api/me", meRoutes);

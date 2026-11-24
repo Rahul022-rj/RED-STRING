@@ -10,6 +10,8 @@ import Generate from "./pages/Generate.jsx";
 import Profile from "./pages/Profile.jsx";
 import Login from "./pages/Login.jsx";
 import Leaderboard from "./pages/Leaderboard.jsx";
+import Forgot from "./pages/Forgot.jsx";
+import ResetPassword from "./pages/ResetPassword.jsx";
 import Flashlight from "./components/Flashlight.jsx";
 import AudioAmbience from "./components/AudioAmbience.jsx";
 import Toasts from "./components/Toasts.jsx";
@@ -105,6 +107,8 @@ export default function App() {
         <Route path="/" element={<Home />} />
         <Route path="/login" element={<Login />} />
         <Route path="/leaderboard" element={<Leaderboard />} />
+        <Route path="/forgot" element={<Forgot />} />
+        <Route path="/reset-password" element={<ResetPassword />} />
         <Route path="/cases" element={<Cases />} />
         <Route path="/generate" element={guard(<Generate />)} />
         <Route path="/profile" element={guard(<Profile />)} />

@@ -66,7 +66,11 @@ export const generateCase = (payload) => request("POST", "/generate", payload);
 export const deleteCustomCase = (caseId) => request("DELETE", "/generate/" + caseId);
 
 /* auth */
-export const register = (username, password, displayName) => request("POST", "/auth/register", { username, password, displayName });
+export const register = (username, password, displayName, email) => request("POST", "/auth/register", { username, password, displayName, email });
+export const forgotPassword = (identifier) => request("POST", "/auth/forgot-password", { identifier });
+export const forgotUsername = (email) => request("POST", "/auth/forgot-username", { email });
+export const resetPassword = (token, password) => request("POST", "/auth/reset-password", { token, password });
+export const updateEmail = (email, password) => request("PUT", "/me/email", { email, password });
 export const login = (username, password) => request("POST", "/auth/login", { username, password });
 
 /* player state */

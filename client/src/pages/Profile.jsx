@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { getProfile, renameDetective, logout } from "../game/storage.js";
-import { changePassword } from "../services/api.js";
+import { getProfile, renameDetective, logout, setProfile } from "../game/storage.js";
+import { changePassword, updateEmail, setToken } from "../services/api.js";
 import { levelInfo, ACHIEVEMENTS } from "../game/rules.js";
 import { on, toast } from "../game/events.js";
 import { sfx } from "../game/sfx.js";
@@ -30,6 +30,26 @@ export default function Profile() {
     }
   }
 
+  const [mail, setMail] = useState({ email: p.email || "", password: "" });
+  const [mailMsg, setMailMsg] = useState(null);
+  const [mailBusy, setMailBusy] = useState(false);
+
+  async function submitEmail(e) {
+    e.preventDefault();
+    setMailBusy(true);
+    try {
+      const res = await updateEmail(mail.email.trim(), mail.password);
+      setProfile(res.profile);
+      sfx.stamp();
+      setMail({ email: res.profile.email || "", password: "" });
+      setMailMsg({ ok: true, text: res.profile.email ? "Recovery email saved." : "Recovery email removed." });
+    } catch (err) {
+      sfx.deny();
+      setMailMsg({ ok: false, text: err.message });
+    }
+    setMailBusy(false);
+  }
+
   const [pw, setPw] = useState({ current: "", next: "", confirm: "" });
   const [pwMsg, setPwMsg] = useState(null);
   const [pwBusy, setPwBusy] = useState(false);
@@ -40,10 +60,11 @@ export default function Profile() {
     if (pw.next.length < 6) return setPwMsg({ ok: false, text: "The new password must be at least 6 characters." });
     setPwBusy(true);
     try {
-      await changePassword(pw.current, pw.next);
+      const res = await changePassword(pw.current, pw.next);
+      if (res.token) setToken(res.token); // other devices are signed out, this one stays in
       sfx.stamp();
       setPw({ current: "", next: "", confirm: "" });
-      setPwMsg({ ok: true, text: "Password changed. Use it next time you log in." });
+      setPwMsg({ ok: true, text: "Password changed. Your other devices have been signed out." });
     } catch (err) {
       sfx.deny();
       setPwMsg({ ok: false, text: err.message });
@@ -121,7 +142,27 @@ export default function Profile() {
       </div>
 
       <h3 className="section-title">Security</h3>
+      <div className="security-grid">
+      <form className="pw-form" onSubmit={submitEmail}>
+        <strong>Recovery email</strong>
+        <p className="muted small">
+          {p.email ? "Used only to reset your password or remind you of your username. Never shown to other players." : "No recovery email yet. Without one, a forgotten password can't be reset."}
+        </p>
+        <label>
+          <span className="field-label">Email</span>
+          <input type="email" autoComplete="email" value={mail.email} maxLength={254}
+            onChange={(e) => setMail({ ...mail, email: e.target.value })} placeholder="you@example.com" />
+        </label>
+        <label>
+          <span className="field-label">Your password (to confirm)</span>
+          <input type="password" autoComplete="current-password" value={mail.password}
+            onChange={(e) => setMail({ ...mail, password: e.target.value })} required />
+        </label>
+        <button className="btn btn-primary" disabled={mailBusy}>{mailBusy ? "Saving..." : p.email ? "Update email" : "Add email"}</button>
+        {mailMsg && <p className={mailMsg.ok ? "ok-text" : "error-text"}>{mailMsg.text}</p>}
+      </form>
       <form className="pw-form" onSubmit={submitPassword}>
+        <strong>Change password</strong>
         <label>
           <span className="field-label">Current password</span>
           <input type="password" autoComplete="current-password" value={pw.current}
@@ -140,6 +181,7 @@ export default function Profile() {
         <button className="btn btn-primary" disabled={pwBusy}>{pwBusy ? "Saving..." : "Change password"}</button>
         {pwMsg && <p className={pwMsg.ok ? "ok-text" : "error-text"}>{pwMsg.text}</p>}
       </form>
+      </div>
     </div>
   );
 }

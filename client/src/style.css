@@ -574,3 +574,9 @@ body { padding-bottom: env(safe-area-inset-bottom); }
   .lb-row.case-row { grid-template-columns: 40px 1fr 70px 60px; }
   .lb-row.case-row > span { display: block !important; }
 }
+
+/* ---------- account recovery ---------- */
+.auth-links { display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+.security-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 420px)); gap: 20px; }
+.security-grid .pw-form { max-width: none; }
+.auth-card .ok-text { line-height: 1.6; }
