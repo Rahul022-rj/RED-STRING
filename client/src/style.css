@@ -580,3 +580,9 @@ body { padding-bottom: env(safe-area-inset-bottom); }
 .security-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 420px)); gap: 20px; }
 .security-grid .pw-form { max-width: none; }
 .auth-card .ok-text { line-height: 1.6; }
+
+/* ---------- danger zone ---------- */
+.danger-title { color: var(--highlight-red); }
+.danger-zone { border: 1px solid var(--primary-red); background: rgba(200, 58, 70, 0.05); padding: 20px; max-width: 860px; }
+.danger-row { display: flex; justify-content: space-between; align-items: center; gap: 16px; flex-wrap: wrap; }
+.danger-zone .pw-form { background: transparent; border: none; padding: 0; }

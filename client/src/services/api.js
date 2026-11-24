@@ -71,6 +71,7 @@ export const forgotPassword = (identifier) => request("POST", "/auth/forgot-pass
 export const forgotUsername = (email) => request("POST", "/auth/forgot-username", { email });
 export const resetPassword = (token, password) => request("POST", "/auth/reset-password", { token, password });
 export const updateEmail = (email, password) => request("PUT", "/me/email", { email, password });
+export const deleteAccount = (password) => request("DELETE", "/me/account", { password });
 export const login = (username, password) => request("POST", "/auth/login", { username, password });
 
 /* player state */

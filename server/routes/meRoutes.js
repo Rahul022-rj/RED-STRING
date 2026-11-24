@@ -12,6 +12,7 @@ router.put("/board/:caseId", wrap(ctrl.saveBoard));
 router.put("/profile", wrap(ctrl.updateProfile));
 router.put("/password", wrap(ctrl.changePassword));
 router.put("/email", wrap(ctrl.updateEmail));
+router.delete("/account", wrap(ctrl.deleteAccount));
 router.post("/event", wrap(ctrl.recordEvent));
 
 module.exports = router;

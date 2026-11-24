@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { getProfile, renameDetective, logout, setProfile } from "../game/storage.js";
-import { changePassword, updateEmail, setToken } from "../services/api.js";
+import { changePassword, updateEmail, setToken, deleteAccount } from "../services/api.js";
 import { levelInfo, ACHIEVEMENTS } from "../game/rules.js";
 import { on, toast } from "../game/events.js";
 import { sfx } from "../game/sfx.js";
@@ -48,6 +48,22 @@ export default function Profile() {
       setMailMsg({ ok: false, text: err.message });
     }
     setMailBusy(false);
+  }
+
+  const [del, setDel] = useState({ open: false, confirm: "", password: "", busy: false, error: "" });
+
+  async function submitDelete(e) {
+    e.preventDefault();
+    setDel({ ...del, busy: true, error: "" });
+    try {
+      await deleteAccount(del.password);
+      await logout({ flushFirst: false });
+      toast("Account deleted", "Your detective file has been shredded.", "info", "🗑️");
+      navigate("/");
+    } catch (err) {
+      sfx.deny();
+      setDel({ ...del, busy: false, error: err.message });
+    }
   }
 
   const [pw, setPw] = useState({ current: "", next: "", confirm: "" });
@@ -181,6 +197,38 @@ export default function Profile() {
         <button className="btn btn-primary" disabled={pwBusy}>{pwBusy ? "Saving..." : "Change password"}</button>
         {pwMsg && <p className={pwMsg.ok ? "ok-text" : "error-text"}>{pwMsg.text}</p>}
       </form>
+      </div>
+
+      <h3 className="section-title danger-title">Danger zone</h3>
+      <div className="danger-zone">
+        {!del.open ? (
+          <div className="danger-row">
+            <div>
+              <strong>Delete account</strong>
+              <p className="muted small">Permanently removes your account, saved games, XP and leaderboard place. This can't be undone.</p>
+            </div>
+            <button className="btn btn-danger" onClick={() => setDel({ ...del, open: true })}>Delete account</button>
+          </div>
+        ) : (
+          <form className="pw-form" onSubmit={submitDelete}>
+            <strong>Delete @{p.username} forever?</strong>
+            <label>
+              <span className="field-label">Type your username to confirm</span>
+              <input value={del.confirm} onChange={(e) => setDel({ ...del, confirm: e.target.value })} autoComplete="off" />
+            </label>
+            <label>
+              <span className="field-label">Your password</span>
+              <input type="password" autoComplete="current-password" value={del.password} onChange={(e) => setDel({ ...del, password: e.target.value })} required />
+            </label>
+            {del.error && <p className="error-text">{del.error}</p>}
+            <div className="btn-row">
+              <button type="button" className="btn btn-ghost" onClick={() => setDel({ open: false, confirm: "", password: "", busy: false, error: "" })}>Cancel</button>
+              <button className="btn btn-danger" disabled={del.busy || del.confirm.trim().toLowerCase() !== p.username}>
+                {del.busy ? "Deleting..." : "Delete my account"}
+              </button>
+            </div>
+          </form>
+        )}
       </div>
     </div>
   );

@@ -163,4 +163,18 @@ async function caseLeaderboard(req, res) {
   });
 }
 
-module.exports = { getState, saveProgress, saveBoard, resetProgress, updateProfile, recordEvent, leaderboard, changePassword, updateEmail, caseLeaderboard };
+// Permanently delete the player's account and saved games. Needs the password.
+// Cases they generated stay playable for everyone (shown as created by "a former detective").
+async function deleteAccount(req, res) {
+  const { password } = req.body || {};
+  if (!(await bcrypt.compare(String(password || ""), req.user.passwordHash))) {
+    return res.status(400).json({ error: "Password is wrong" });
+  }
+  const CustomCase = require("../models/CustomCase");
+  await Progress.deleteMany({ user: req.user._id });
+  await CustomCase.updateMany({ createdBy: req.user._id }, { $set: { createdBy: null, creatorName: "a former detective" } });
+  await req.user.deleteOne();
+  res.json({ ok: true });
+}
+
+module.exports = { getState, saveProgress, saveBoard, resetProgress, updateProfile, recordEvent, leaderboard, changePassword, updateEmail, deleteAccount, caseLeaderboard };
