@@ -10,7 +10,7 @@ Create a free detective account and play from any device. Your progress is saved
 
 ### 📱 Android app
 
-**[⬇️ Download RED STRING for Android (APK)](https://github.com/Rahul022-rj/RED-STRING/releases/latest/download/red-string.apk)**
+**[⬇️ Download RED STRING for Android (APK)](https://red-string-7n2s.onrender.com/downloads/red-string.apk)**
 
 The app and the website share the **same server and database**: log in with the same account and your cases, board, XP and leaderboard rank stay in sync in both directions.
 
@@ -199,7 +199,7 @@ cd android
 
 Set `sdk.dir` in `client/android/local.properties` if Gradle can't find your Android SDK (e.g. `sdk.dir=D:/Android/SDK`).
 
-**Publishing a new version:** on GitHub open **Releases → Draft a new release**, attach the APK renamed to **`red-string.apk`**, and publish. The download link on the website and in this README always points to the latest release.
+**Publishing a new version:** copy the new APK to **`client/public/downloads/red-string.apk`**, commit and push. Render redeploys and the website's "Download the app" button (`/downloads/red-string.apk`) serves the new file.
 
 App icons and splash screens are generated from `client/assets/` with `npx @capacitor/assets generate --android`.
 

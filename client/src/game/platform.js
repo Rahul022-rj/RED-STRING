@@ -4,8 +4,8 @@ import { App as NativeApp } from "@capacitor/app";
 
 export const isNativeApp = Capacitor.isNativePlatform();
 
-// Stable link to the newest APK attached to a GitHub release named "red-string.apk".
-export const APK_URL = "https://github.com/Rahul022-rj/RED-STRING/releases/latest/download/red-string.apk";
+// The APK is served by the game's own server (client/public/downloads).
+export const APK_URL = "/downloads/red-string.apk";
 
 // Android hardware back button: go back a screen, or leave the app from the home screen.
 export function setupNativeBackButton() {

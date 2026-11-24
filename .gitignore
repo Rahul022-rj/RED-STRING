@@ -16,3 +16,4 @@ deploy.env
 release/
 *.apk
 *.aab
+!client/public/downloads/red-string.apk
