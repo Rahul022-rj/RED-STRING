@@ -1,10 +1,32 @@
-// Sends transactional email through Brevo's HTTPS API (Render's free plan blocks SMTP ports).
-// Env: BREVO_API_KEY, MAIL_FROM (a sender address verified in Brevo), MAIL_FROM_NAME (optional).
-// Without a key, development prints the email to the console instead of sending it.
+// Sends transactional email over HTTPS (Render's free plan blocks SMTP ports). Two free options:
+//  1. Gmail via a Google Apps Script web app (docs/gmail-mailer.gs):
+//       GMAIL_SCRIPT_URL = the script's /exec URL, MAIL_SECRET = the shared secret set in the script
+//  2. Brevo's API: BREVO_API_KEY + MAIL_FROM (a sender verified in Brevo)
+// MAIL_FROM_NAME is optional. With neither configured, development prints emails to the console.
 
 const API = "https://api.brevo.com/v3/smtp/email";
 
-const isConfigured = () => Boolean(process.env.BREVO_API_KEY && process.env.MAIL_FROM);
+const useGmail = () => Boolean(process.env.GMAIL_SCRIPT_URL && process.env.MAIL_SECRET);
+const useBrevo = () => Boolean(process.env.BREVO_API_KEY && process.env.MAIL_FROM);
+const isConfigured = () => useGmail() || useBrevo();
+
+async function sendViaGmail({ to, subject, html, text }) {
+  // Apps Script answers the POST with a redirect to the result; fetch follows it.
+  const res = await fetch(process.env.GMAIL_SCRIPT_URL, {
+    method: "POST",
+    headers: { "Content-Type": "text/plain;charset=utf-8" },
+    body: JSON.stringify({ secret: process.env.MAIL_SECRET, to, subject, html, text, name: process.env.MAIL_FROM_NAME || "RED STRING" }),
+    redirect: "follow"
+  });
+  const body = await res.text();
+  let data = {};
+  try { data = JSON.parse(body); } catch { /* not JSON: an Apps Script error page */ }
+  if (!res.ok || !data.ok) {
+    console.error("[mail] Gmail script error " + res.status + ": " + (data.error || body.slice(0, 200)));
+    return false;
+  }
+  return true;
+}
 
 const escapeHtml = (s) => String(s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
 
@@ -26,12 +48,13 @@ const button = (url, label) =>
 async function send({ to, subject, html, text }) {
   if (!isConfigured()) {
     if (process.env.NODE_ENV === "production") {
-      console.error("[mail] BREVO_API_KEY / MAIL_FROM not set - email to " + to + " was NOT sent.");
+      console.error("[mail] No mail provider configured (GMAIL_SCRIPT_URL + MAIL_SECRET, or BREVO_API_KEY + MAIL_FROM) - email to " + to + " was NOT sent.");
       return false;
     }
     console.log("\n[mail:dev] To: " + to + "\n[mail:dev] Subject: " + subject + "\n" + text + "\n");
     return true;
   }
+  if (useGmail()) return sendViaGmail({ to, subject, html, text });
   const res = await fetch(API, {
     method: "POST",
     headers: { "api-key": process.env.BREVO_API_KEY, "Content-Type": "application/json", Accept: "application/json" },

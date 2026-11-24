@@ -165,7 +165,7 @@ In production the Express server hosts both the API and the built game, so the w
 2. **Push** this repo to GitHub.
 3. **Render:** On [render.com](https://render.com) choose **New → Blueprint** and select the repo. `render.yaml` sets everything up (build `npm run build`, start `npm start`, auto-generated `JWT_SECRET`).
 4. When asked, paste your Atlas string as **`MONGODB_URI`**.
-   For recovery emails also set **`BREVO_API_KEY`** and **`MAIL_FROM`** (a sender address verified in [Brevo](https://www.brevo.com), free for 300 emails a day). Without them the game works, but "Forgot password" emails are not sent.
+   For recovery emails, set up the free Gmail sender in [`docs/gmail-mailer.gs`](docs/gmail-mailer.gs) and add **`GMAIL_SCRIPT_URL`** and **`MAIL_SECRET`** (about 100 emails a day, no card needed). Brevo also works (`BREVO_API_KEY` + `MAIL_FROM`). Without either, the game works but "Forgot password" emails are not sent; `/api/health` shows `mail: configured` once it's set up.
 5. Open the `https://red-string-xxxx.onrender.com` URL and share it. (The official deployment is live at **https://red-string-7n2s.onrender.com/**.)
 
 Any Node host works the same way (Railway, Fly.io, a VPS): run `npm run build`, then `npm start` with `MONGODB_URI`, `JWT_SECRET` and `NODE_ENV=production` set.
