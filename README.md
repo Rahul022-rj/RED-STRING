@@ -2,6 +2,14 @@
 
 > **"Every clue connects. Every truth has a cost."**
 
+## 🎮 Play Now
+
+### 👉 **[https://red-string-7n2s.onrender.com/](https://red-string-7n2s.onrender.com/)**
+
+Create a free detective account and play from any device. Your progress is saved online and you can climb the global leaderboard.
+
+> Hosted on Render's free plan: if nobody has played for a while, the first load can take 30–50 seconds while the server wakes up.
+
 **RED STRING** is a complete, full-stack, interactive detective game. Players step into the shoes of an investigator to solve mysterious incidents by examining suspects, discovering hidden evidence, and connecting clues on an interactive virtual corkboard using red strings. Once they have a theory, they make an accusation and get scored based on their detective work.
 
 The application features a Node.js/Express backend for game logic, API routing, and scoring, alongside a dynamic React/Vite frontend featuring a premium cinematic dark theme. It also includes an AI-powered Case Generator to create infinite new mysteries!
@@ -114,7 +122,7 @@ In production the Express server hosts both the API and the built game, so the w
 2. **Push** this repo to GitHub.
 3. **Render:** On [render.com](https://render.com) choose **New → Blueprint** and select the repo. `render.yaml` sets everything up (build `npm run build`, start `npm start`, auto-generated `JWT_SECRET`).
 4. When asked, paste your Atlas string as **`MONGODB_URI`**.
-5. Open the `https://red-string-xxxx.onrender.com` URL and share it.
+5. Open the `https://red-string-xxxx.onrender.com` URL and share it. (The official deployment is live at **https://red-string-7n2s.onrender.com/**.)
 
 Any Node host works the same way (Railway, Fly.io, a VPS): run `npm run build`, then `npm start` with `MONGODB_URI`, `JWT_SECRET` and `NODE_ENV=production` set.
 
