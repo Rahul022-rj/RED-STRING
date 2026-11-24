@@ -1,6 +1,8 @@
 import { emit } from "../game/events.js";
 
-const base = "/api";
+// The website talks to its own server ("/api"). The mobile app is built with
+// VITE_API_URL pointing at the live server, so both use the same database.
+const base = import.meta.env.VITE_API_URL || "/api";
 const TOKEN_KEY = "redstring-token";
 
 export function getToken() {

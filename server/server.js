@@ -18,8 +18,19 @@ const app = express();
 const PORT = process.env.PORT || 5000;
 
 app.set("trust proxy", 1); // correct client IPs for rate limiting behind Render/Railway
+// Allowed browser origins: the web dev server, the mobile app's WebView
+// (Capacitor serves from https://localhost on Android, capacitor://localhost on iOS),
+// plus any extra comma-separated origins in FRONTEND_URL.
+// Auth uses bearer tokens (no cookies), so allowing these origins is safe.
+const allowedOrigins = new Set([
+  "http://localhost:5173",
+  "https://localhost",
+  "http://localhost",
+  "capacitor://localhost",
+  ...String(process.env.FRONTEND_URL || "").split(",").map((s) => s.trim()).filter(Boolean)
+]);
 app.use(cors({
-  origin: process.env.FRONTEND_URL || "http://localhost:5173"
+  origin: (origin, cb) => cb(null, !origin || allowedOrigins.has(origin))
 }));
 app.use(express.json({ limit: "1mb" }));
 

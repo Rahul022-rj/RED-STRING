@@ -540,3 +540,14 @@ code { background: var(--secondary); padding: 2px 6px; }
   .lb-row { grid-template-columns: 40px 1fr 50px 70px; }
   .lb-row > span:nth-child(5), .lb-row > span:nth-child(6), .lb-row > span:nth-child(7) { display: none; }
 }
+
+/* ---------- app download badge ---------- */
+.app-badge { display: inline-flex; align-items: center; gap: 12px; margin: 0 auto 36px; padding: 10px 20px; background: #000; border: 1px solid #44474f; border-radius: 10px; color: var(--text); text-decoration: none; transition: border-color 0.2s, transform 0.2s; animation: fadeUp 0.8s ease 0.5s backwards; }
+.app-badge:hover { border-color: var(--primary-red); transform: translateY(-2px); }
+.app-badge-icon { font-size: 26px; }
+.app-badge span { display: flex; flex-direction: column; text-align: left; line-height: 1.2; }
+.app-badge small { font-size: 11px; color: var(--muted); letter-spacing: 1px; }
+.app-badge strong { font-size: 16px; letter-spacing: 0.5px; }
+
+/* ---------- native app: respect phone notches/status bar ---------- */
+body { padding-top: env(safe-area-inset-top); padding-bottom: env(safe-area-inset-bottom); }

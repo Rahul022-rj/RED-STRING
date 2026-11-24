@@ -11,3 +11,8 @@ client/dist/
 
 # Local deploy secrets (never commit)
 deploy.env
+
+# Built app packages (upload them to GitHub Releases instead)
+release/
+*.apk
+*.aab

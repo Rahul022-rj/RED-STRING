@@ -16,6 +16,7 @@ import Toasts from "./components/Toasts.jsx";
 import { getToken } from "./services/api.js";
 import { hydrate, isLoggedIn, logout } from "./game/storage.js";
 import { on, toast } from "./game/events.js";
+import { setupNativeBackButton } from "./game/platform.js";
 
 function NotFound() {
   return (
@@ -56,6 +57,8 @@ export default function App() {
     if (getToken()) restore();
   }, []);
 
+  useEffect(() => setupNativeBackButton(), []);
+
   useEffect(() => on("login", () => setVersion((v) => v + 1)), []);
   useEffect(
     () =>
@@ -75,7 +78,7 @@ export default function App() {
         {offline ? (
           <>
             <h2 className="page-title">No signal</h2>
-            <p className="page-sub">Can't reach the precinct server.</p>
+            <p className="page-sub">Can't reach the precinct server. Check your internet connection.</p>
             <button className="btn btn-primary" onClick={restore}>Try again</button>
           </>
         ) : (

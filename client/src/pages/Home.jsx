@@ -5,6 +5,7 @@ import { getAllProgress, getProfile, isLoggedIn } from "../game/storage.js";
 import { levelInfo, ACHIEVEMENTS } from "../game/rules.js";
 import { sfx } from "../game/sfx.js";
 import { on } from "../game/events.js";
+import { isNativeApp, APK_URL } from "../game/platform.js";
 
 export default function Home() {
   const [profile, setProfile] = useState(getProfile);
@@ -59,6 +60,16 @@ export default function Home() {
         )}
 
         {offline && <p className="error-text">Can't reach the precinct server right now.</p>}
+
+        {!isNativeApp && (
+          <a className="app-badge" href={APK_URL} onClick={() => sfx.click()}>
+            <span className="app-badge-icon">📱</span>
+            <span>
+              <small>Get it for Android</small>
+              <strong>Download the app</strong>
+            </span>
+          </a>
+        )}
 
         <div className="stats-row">
           <div className="stat-card">

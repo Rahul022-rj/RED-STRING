@@ -8,6 +8,15 @@
 
 Create a free detective account and play from any device. Your progress is saved online and you can climb the global leaderboard.
 
+### 📱 Android app
+
+**[⬇️ Download RED STRING for Android (APK)](https://github.com/Rahul022-rj/RED-STRING/releases/latest/download/red-string.apk)**
+
+The app and the website share the **same server and database**: log in with the same account and your cases, board, XP and leaderboard rank stay in sync in both directions.
+
+> Installing: open the downloaded file on your phone and allow "Install unknown apps" for your browser when Android asks.
+> On iPhone, open the website in Safari → Share → **Add to Home Screen** to install it like an app.
+
 > Hosted on Render's free plan: if nobody has played for a while, the first load can take 30–50 seconds while the server wakes up.
 
 <p align="center">
@@ -171,6 +180,28 @@ Any Node host works the same way (Railway, Fly.io, a VPS): run `npm run build`, 
 | POST | `/api/game/accuse`, `/api/game/hint` | ✔ | Server-scored accusation, informant tips |
 | POST/DELETE | `/api/generate` | ✔ | Generate / delete your custom case |
 | GET | `/api/cases`, `/api/leaderboard` | – | Case archive, rankings |
+
+---
+
+## 📱 Building the Android App
+
+The Android app is the same React game wrapped with [Capacitor](https://capacitorjs.com/). Its build points at the live server (`client/.env.app` → `VITE_API_URL`), so it uses the same database as the website.
+
+Requirements: Android SDK (e.g. from Android Studio) and **JDK 21** (Gradle 8.14 can't run on Java 25).
+
+```bash
+cd client
+npm run build:app            # build the web game for the app + copy it into android/
+cd android
+# Windows (PowerShell): $env:JAVA_HOME="C:\path\to\jdk-21"
+./gradlew assembleDebug      # → android/app/build/outputs/apk/debug/app-debug.apk
+```
+
+Set `sdk.dir` in `client/android/local.properties` if Gradle can't find your Android SDK (e.g. `sdk.dir=D:/Android/SDK`).
+
+**Publishing a new version:** on GitHub open **Releases → Draft a new release**, attach the APK renamed to **`red-string.apk`**, and publish. The download link on the website and in this README always points to the latest release.
+
+App icons and splash screens are generated from `client/assets/` with `npx @capacitor/assets generate --android`.
 
 ---
 
