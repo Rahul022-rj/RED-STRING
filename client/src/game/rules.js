@@ -29,6 +29,12 @@ export function groupByLocation(evidence) {
 
 export function locationIcon(name) {
   const n = name.toLowerCase();
+  if (/(radio)/.test(n)) return "📻";
+  if (/(lamp|lighthouse)/.test(n)) return "💡";
+  if (/(harbour|harbor|boat|dock|bridge)/.test(n)) return "⚓";
+  if (/(box office|ticket)/.test(n)) return "🎟️";
+  if (/(dressing|green room|wings|theatre|theater)/.test(n)) return "🎭";
+  if (/(cottage)/.test(n)) return "🏠";
   if (/(security|footage|camera|cctv)/.test(n)) return "📹";
   if (/(server|terminal|digital|computer)/.test(n)) return "💻";
   if (/(office|desk|study)/.test(n)) return "🗄️";

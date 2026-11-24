@@ -68,8 +68,10 @@ The application features a Node.js/Express backend for game logic, API routing, 
 - **Detective career:** Enlist with a name, earn XP, level up through ranks from Rookie to Living Legend, and unlock 13 achievements. Best scores and stars are kept per case.
 - **Audio:** Procedural sound effects and an ambient rain-and-drone soundtrack, all synthesized with the Web Audio API (no audio files).
 - **Case generator:** Generate unlimited playable cases from 8 settings, each with its own set of search locations (local template engine, or OpenAI if a key is configured).
-- **Online accounts:** Register and log in (bcrypt-hashed passwords, JWT sessions). Your cases, notes, board, XP and achievements are stored in MongoDB, so you can continue on any device.
-- **Global leaderboard:** Every player is ranked by XP. XP and scores are computed on the server from stored progress, so they can't be edited in the browser.
+- **5 hand-written cases:** The Missing Diamond (Easy), Midnight at Blackwood (Medium), The Missing Scientist (Hard), Curtain Call at the Orpheum (Medium) and The Dark Lighthouse (Hard), plus unlimited generated ones.
+- **Online accounts:** Register and log in (bcrypt-hashed passwords, JWT sessions), and change your password from your profile. Your cases, notes, board, XP and achievements are stored in MongoDB, so you can continue on any device.
+- **Global and per-case leaderboards:** Every player is ranked by XP, and each case has its own top-10 best scores. XP and scores are computed on the server from stored progress, so they can't be edited in the browser.
+- **Android app:** A signed APK built with Capacitor that shares the same accounts and database as the website.
 - **Shared case library:** Cases a player generates are saved to the database and playable by everyone, credited to their creator. Only the creator can delete them.
 - **Solutions stay on the server:** Culprits and solutions never reach the client until you accuse.
 
@@ -167,7 +169,7 @@ In production the Express server hosts both the API and the built game, so the w
 
 Any Node host works the same way (Railway, Fly.io, a VPS): run `npm run build`, then `npm start` with `MONGODB_URI`, `JWT_SECRET` and `NODE_ENV=production` set.
 
-> Render's free plan sleeps after inactivity, so the first visit can take ~30–50 seconds to wake up.
+> Render's free plan sleeps after inactivity. The GitHub Actions workflow `.github/workflows/keepalive.yml` pings `/api/health` about every 10 minutes to keep it awake. GitHub pauses scheduled workflows after 60 days without repo activity; re-enable it from the **Actions** tab if that happens.
 
 ### API overview
 
@@ -179,7 +181,8 @@ Any Node host works the same way (Railway, Fly.io, a VPS): run `npm run build`, 
 | DELETE | `/api/me/progress/:caseId` | ✔ | Reset a case |
 | POST | `/api/game/accuse`, `/api/game/hint` | ✔ | Server-scored accusation, informant tips |
 | POST/DELETE | `/api/generate` | ✔ | Generate / delete your custom case |
-| GET | `/api/cases`, `/api/leaderboard` | – | Case archive, rankings |
+| PUT | `/api/me/password` | ✔ | Change password (needs the current one) |
+| GET | `/api/cases`, `/api/leaderboard`, `/api/leaderboard/case/:caseId` | – | Case archive, overall and per-case rankings |
 
 ---
 
@@ -194,12 +197,16 @@ cd client
 npm run build:app            # build the web game for the app + copy it into android/
 cd android
 # Windows (PowerShell): $env:JAVA_HOME="C:\path\to\jdk-21"
-./gradlew assembleDebug      # → android/app/build/outputs/apk/debug/app-debug.apk
+./gradlew assembleDebug      # quick test build → app/build/outputs/apk/debug/app-debug.apk
+./gradlew assembleRelease -PRS_KEYSTORE=... -PRS_KEYSTORE_PASSWORD=... -PRS_KEY_ALIAS=red-string -PRS_KEY_PASSWORD=...
+                             # signed release → app/build/outputs/apk/release/app-release.apk
 ```
 
 Set `sdk.dir` in `client/android/local.properties` if Gradle can't find your Android SDK (e.g. `sdk.dir=D:/Android/SDK`).
 
-**Publishing a new version:** copy the new APK to **`client/public/downloads/red-string.apk`**, commit and push. Render redeploys and the website's "Download the app" button (`/downloads/red-string.apk`) serves the new file.
+**Release signing:** the release keystore is kept **outside the repo**. Never commit it. Its path and passwords are passed as the `RS_*` Gradle properties above (or put in `~/.gradle/gradle.properties`). Back the keystore up: Android only accepts updates signed with the **same** key.
+
+**Publishing a new version:** bump `versionCode`/`versionName` in `client/android/app/build.gradle`, build the signed release, copy it to **`client/public/downloads/red-string.apk`**, then commit and push. Render redeploys and the website's "Download the app" button (`/downloads/red-string.apk`) serves the new file.
 
 App icons and splash screens are generated from `client/assets/` with `npx @capacitor/assets generate --android`.
 

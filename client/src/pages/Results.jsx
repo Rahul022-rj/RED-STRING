@@ -6,6 +6,7 @@ import { announce, MAX_CITED } from "../game/rules.js";
 import { sfx } from "../game/sfx.js";
 import { toast } from "../game/events.js";
 import ConfirmDialog from "../components/ConfirmDialog.jsx";
+import CaseLeaderboard from "../components/CaseLeaderboard.jsx";
 
 export default function Results() {
   const { id } = useParams();
@@ -279,6 +280,8 @@ function Report({ data, result, reward, animate, onReplay }) {
               })}
             </ul>
           </div>
+
+          <CaseLeaderboard caseId={data.id} title={"Case hall of fame: " + data.title} />
 
           <div className="cta-row">
             <button className="btn btn-primary" onClick={onReplay}>↻ Replay case</button>

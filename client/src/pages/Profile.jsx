@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { getProfile, renameDetective, logout } from "../game/storage.js";
+import { changePassword } from "../services/api.js";
 import { levelInfo, ACHIEVEMENTS } from "../game/rules.js";
 import { on, toast } from "../game/events.js";
 import { sfx } from "../game/sfx.js";
@@ -27,6 +28,27 @@ export default function Profile() {
     } catch (err) {
       toast("Rename failed", err.message, "danger", "⚠️");
     }
+  }
+
+  const [pw, setPw] = useState({ current: "", next: "", confirm: "" });
+  const [pwMsg, setPwMsg] = useState(null);
+  const [pwBusy, setPwBusy] = useState(false);
+
+  async function submitPassword(e) {
+    e.preventDefault();
+    if (pw.next !== pw.confirm) return setPwMsg({ ok: false, text: "The new passwords don't match." });
+    if (pw.next.length < 6) return setPwMsg({ ok: false, text: "The new password must be at least 6 characters." });
+    setPwBusy(true);
+    try {
+      await changePassword(pw.current, pw.next);
+      sfx.stamp();
+      setPw({ current: "", next: "", confirm: "" });
+      setPwMsg({ ok: true, text: "Password changed. Use it next time you log in." });
+    } catch (err) {
+      sfx.deny();
+      setPwMsg({ ok: false, text: err.message });
+    }
+    setPwBusy(false);
   }
 
   async function signOut() {
@@ -97,6 +119,27 @@ export default function Profile() {
           );
         })}
       </div>
+
+      <h3 className="section-title">Security</h3>
+      <form className="pw-form" onSubmit={submitPassword}>
+        <label>
+          <span className="field-label">Current password</span>
+          <input type="password" autoComplete="current-password" value={pw.current}
+            onChange={(e) => setPw({ ...pw, current: e.target.value })} required />
+        </label>
+        <label>
+          <span className="field-label">New password</span>
+          <input type="password" autoComplete="new-password" minLength={6} value={pw.next}
+            onChange={(e) => setPw({ ...pw, next: e.target.value })} required />
+        </label>
+        <label>
+          <span className="field-label">Repeat new password</span>
+          <input type="password" autoComplete="new-password" minLength={6} value={pw.confirm}
+            onChange={(e) => setPw({ ...pw, confirm: e.target.value })} required />
+        </label>
+        <button className="btn btn-primary" disabled={pwBusy}>{pwBusy ? "Saving..." : "Change password"}</button>
+        {pwMsg && <p className={pwMsg.ok ? "ok-text" : "error-text"}>{pwMsg.text}</p>}
+      </form>
     </div>
   );
 }

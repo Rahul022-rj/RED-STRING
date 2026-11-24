@@ -12,7 +12,7 @@ const gameRoutes = require("./routes/gameRoutes");
 const generateRoutes = require("./routes/generateRoutes");
 const authRoutes = require("./routes/authRoutes");
 const meRoutes = require("./routes/meRoutes");
-const { leaderboard } = require("./controllers/meController");
+const { leaderboard, caseLeaderboard } = require("./controllers/meController");
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -43,6 +43,7 @@ app.use("/api/cases", caseRoutes);
 app.use("/api/game", gameRoutes);
 app.use("/api/generate", generateRoutes);
 app.get("/api/leaderboard", wrap(optionalAuth), wrap(leaderboard));
+app.get("/api/leaderboard/case/:caseId", wrap(caseLeaderboard));
 app.use("/api", (req, res) => res.status(404).json({ error: "Not found" }));
 
 // In production the server also hosts the built React app, so one URL serves everything.

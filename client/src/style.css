@@ -558,3 +558,19 @@ body { padding-bottom: env(safe-area-inset-bottom); }
 @media (max-width: 768px) {
   .navbar { padding-top: calc(12px + env(safe-area-inset-top)); }
 }
+
+/* ---------- per-case leaderboard & password form ---------- */
+.lb-views { margin-bottom: 18px; }
+.lb-views select { background: var(--secondary); color: var(--text); border: 1px solid #33363D; padding: 10px 14px; font-family: inherit; font-size: 14px; max-width: 100%; }
+.lb-views select:focus { outline: none; border-color: var(--primary-red); }
+.lb-row.case-row { grid-template-columns: 56px 1fr 90px 80px; }
+.case-lb { text-align: left; margin: 10px 0 20px; }
+.pw-form { display: flex; flex-direction: column; gap: 14px; max-width: 420px; background: var(--panel); border: 1px solid var(--line); padding: 24px; }
+.pw-form label { display: flex; flex-direction: column; gap: 6px; }
+.pw-form input { background: var(--secondary); color: var(--text); border: 1px solid #33363D; padding: 12px; font-family: inherit; font-size: 15px; }
+.pw-form input:focus { outline: none; border-color: var(--primary-red); }
+.ok-text { color: var(--green); font-size: 14px; }
+@media (max-width: 768px) {
+  .lb-row.case-row { grid-template-columns: 40px 1fr 70px 60px; }
+  .lb-row.case-row > span { display: block !important; }
+}

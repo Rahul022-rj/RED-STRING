@@ -7,8 +7,8 @@ android {
         applicationId "com.redstring.detective"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 1
-        versionName "1.0"
+        versionCode 2
+        versionName "1.1"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         aaptOptions {
              // Files and dirs to omit from the packaged assets dir, modified to accommodate modern web apps.
@@ -16,8 +16,26 @@ android {
             ignoreAssetsPattern = '!.svn:!.git:!.ds_store:!*.scc:.*:!CVS:!thumbs.db:!picasa.ini:!*~'
         }
     }
+    // Release signing. The keystore and passwords live OUTSIDE the repo and are passed in as
+    // Gradle properties, e.g. in ~/.gradle/gradle.properties or with -P on the command line:
+    //   RS_KEYSTORE=C:/Users/you/.redstring/red-string-release.jks
+    //   RS_KEYSTORE_PASSWORD=...   RS_KEY_ALIAS=red-string   RS_KEY_PASSWORD=...
+    // Without them, assembleRelease still works but produces an unsigned APK.
+    signingConfigs {
+        release {
+            if (project.hasProperty("RS_KEYSTORE")) {
+                storeFile file(project.property("RS_KEYSTORE"))
+                storePassword project.property("RS_KEYSTORE_PASSWORD")
+                keyAlias project.property("RS_KEY_ALIAS")
+                keyPassword project.property("RS_KEY_PASSWORD")
+            }
+        }
+    }
     buildTypes {
         release {
+            if (project.hasProperty("RS_KEYSTORE")) {
+                signingConfig signingConfigs.release
+            }
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }

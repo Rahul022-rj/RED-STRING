@@ -77,3 +77,5 @@ export const deleteProgress = (caseId) => request("DELETE", "/me/progress/" + ca
 export const putProfile = (patch) => request("PUT", "/me/profile", patch);
 export const postEvent = (type) => request("POST", "/me/event", { type });
 export const fetchLeaderboard = () => request("GET", "/leaderboard");
+export const fetchCaseLeaderboard = (caseId) => request("GET", "/leaderboard/case/" + caseId);
+export const changePassword = (current, next) => request("PUT", "/me/password", { current, next });

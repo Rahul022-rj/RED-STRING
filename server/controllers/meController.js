@@ -1,5 +1,6 @@
 const Progress = require("../models/Progress");
 const User = require("../models/User");
+const bcrypt = require("bcryptjs");
 const { grant, levelInfo } = require("../services/progression");
 
 // Everything the client needs to resume on any device.
@@ -101,4 +102,39 @@ async function leaderboard(req, res) {
   res.json({ players: await User.estimatedDocumentCount(), rows, me });
 }
 
-module.exports = { getState, saveProgress, saveBoard, resetProgress, updateProfile, recordEvent, leaderboard };
+async function changePassword(req, res) {
+  const { current, next } = req.body || {};
+  if (typeof next !== "string" || next.length < 6 || next.length > 100) {
+    return res.status(400).json({ error: "New password must be at least 6 characters" });
+  }
+  if (!(await bcrypt.compare(String(current || ""), req.user.passwordHash))) {
+    return res.status(401).json({ error: "Current password is wrong" });
+  }
+  req.user.passwordHash = await bcrypt.hash(next, 10);
+  await req.user.save();
+  res.json({ ok: true });
+}
+
+// Top 10 best scores on one case.
+async function caseLeaderboard(req, res) {
+  const id = String(req.params.caseId || "");
+  if (!/^[a-zA-Z0-9_-]{1,40}$/.test(id)) return res.status(400).json({ error: "Bad case id" });
+  const field = "cases." + id;
+  const users = await User.find({ [field + ".solves"]: { $gt: 0 } })
+    .sort({ [field + ".best"]: -1, updatedAt: 1 })
+    .limit(10)
+    .lean();
+  res.json({
+    caseId: id,
+    rows: users.map((u, i) => ({
+      rank: i + 1,
+      id: u._id.toString(),
+      name: u.displayName,
+      username: u.username,
+      best: u.cases[id].best,
+      stars: u.cases[id].stars
+    }))
+  });
+}
+
+module.exports = { getState, saveProgress, saveBoard, resetProgress, updateProfile, recordEvent, leaderboard, changePassword, caseLeaderboard };
